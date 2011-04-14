@@ -175,20 +175,12 @@
 
   }
 
-  function emile(el, o, after) {
+  function emile(el, style, opts, after) {
     el = typeof el == 'string' ? document.getElementById(el) : el;
-    var opts = {
-      duration: o.duration,
-      easing: o.easing,
-      after: o.after
-    };
-    delete o.duration;
-    delete o.easing;
-    delete o.after;
     if (prefix && (typeof opts.easing !== 'function')) {
-      return nativeAnim(el, o, opts, after);
+      return nativeAnim(el, style, opts, after);
     }
-    var serial = serialize(o, function (k, v) {
+    var serial = serialize(style, function (k, v) {
       k = camelToDash(k);
       return (camelize(k) in animationProperties) && d.test(v) ?
         [k, v + 'px'] :
