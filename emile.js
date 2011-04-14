@@ -100,7 +100,7 @@
   }
 
   function parse(prop) {
-    var p = parseFloat(prop), q = prop.replace(/^[\-\d\.]+/, '');
+    var p = parseFloat(prop), q = prop ? prop.replace(/^[\-\d\.]+/, '') : prop;
     return isNaN(p) ?
       { v: q,
         f: color,
