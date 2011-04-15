@@ -119,7 +119,7 @@
     return rules;
   }
 
-  function _emile(el, style, opts, after) {
+  function _emile(el, style, opts) {
     opts = opts || {};
     var target = normalize(style),
         comp = el.currentStyle ? el.currentStyle : getComputedStyle(el, null),
@@ -134,25 +134,25 @@
     interval = setInterval(function () {
       var time = +new Date(), p, pos = time > finish ? 1 : (time - start) / dur;
       for (p in target) {
-        el.style[p] = target[p].f(current[p].v, target[p].v, easing(pos)) + target[p].u;
+        try{
+          el.style[p] = target[p].f(current[p].v, target[p].v, easing(pos)) + target[p].u;
+        }catch(e){};
       }
       if (time > finish) {
         clearInterval(interval);
-        opts.after && opts.after();
-        after && setTimeout(after, 1);
+        opts.after && opts.after(el);
       }
     }, 10);
   }
 
-  function nativeAnim(el, o, opts, after) {
+  function nativeAnim(el, o, opts) {
     var props = [],
         styles = [],
         duration = opts.duration || 1000,
         easing = opts.easing || 'ease-out';
     duration = duration + 'ms';
-    (opts.after || after) && el.addEventListener(transitionEnd, function f() {
-      opts.after && opts.after();
-      after && after();
+    opts.after && el.addEventListener(transitionEnd, function f() {
+      opts.after && opts.after(elm);
       el.removeEventListener(transitionEnd, f, true);
     }, true);
 
@@ -165,24 +165,17 @@
       el.style[prefix + 'Transition'] = props;
       for (k in o) {
         var v = (camelize(k) in animationProperties) && d.test(o[k]) ? o[k] + 'px' : o[k];
-        o.hasOwnProperty(k) && (el.style[camelize(k)] = v);
+        try{
+          o.hasOwnProperty(k) && (el.style[camelize(k)] = v);
+        }catch(e){};
       }
     }, 10);
-
   }
 
-  function emile(el, o, after) {
+  function emile(el, o, opts) {
     el = typeof el == 'string' ? document.getElementById(el) : el;
-    var opts = {
-      duration: o.duration,
-      easing: o.easing,
-      after: o.after
-    };
-    delete o.duration;
-    delete o.easing;
-    delete o.after;
     if (prefix && (typeof opts.easing !== 'function')) {
-      return nativeAnim(el, o, opts, after);
+      return nativeAnim(el, o, opts);
     }
     var serial = serialize(o, function (k, v) {
       k = camelToDash(k);
@@ -190,7 +183,7 @@
         [k, v + 'px'] :
         [k, v];
     });
-    _emile(el, serial, opts, after);
+    _emile(el, serial, opts);
   }
 
   var old = context.emile;
@@ -201,3 +194,4 @@
   context.emile = emile;
 
 }(this);
+
