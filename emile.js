@@ -123,7 +123,7 @@
     return rules;
   }
 
-  function _emile(el, style, opts, after) {
+  function _emile(el, style, opts) {
     opts = opts || {};
     var target = normalize(style),
         comp = el.currentStyle ? el.currentStyle : getComputedStyle(el, null),
@@ -143,20 +143,18 @@
       if (time > finish) {
         clearInterval(interval);
         opts.after && opts.after();
-        after && setTimeout(after, 1);
       }
     }, 10);
   }
 
-  function nativeAnim(el, o, opts, after) {
+  function nativeAnim(el, o, opts) {
     var props = [],
         styles = [],
         duration = opts.duration || 1000,
         easing = opts.easing || 'ease-out';
     duration = duration + 'ms';
-    (opts.after || after) && el.addEventListener(transitionEnd, function f() {
+    opts.after && el.addEventListener(transitionEnd, function f() {
       opts.after && opts.after();
-      after && after();
       el.removeEventListener(transitionEnd, f, true);
     }, true);
 
@@ -175,10 +173,10 @@
 
   }
 
-  function emile(el, style, opts, after) {
+  function emile(el, o, opts) {
     el = typeof el == 'string' ? document.getElementById(el) : el;
     if (prefix && (typeof opts.easing !== 'function')) {
-      return nativeAnim(el, style, opts, after);
+      return nativeAnim(el, o, opts);
     }
     var serial = serialize(style, function (k, v) {
       k = camelToDash(k);
@@ -186,7 +184,7 @@
         [k, v + 'px'] :
         [k, v];
     });
-    _emile(el, serial, opts, after);
+    _emile(el, serial, opts);
   }
 
   var old = context.emile;
