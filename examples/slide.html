@@ -93,29 +93,31 @@
         right: 500,
         bottom: 100,
         easing: easings.bounce,
-        duration: 1000
-      }, function () {
-        emile('emile', {
-          opacity: 1,
-          duration: 1000,
-          after: function () {
-            function f1() {
-              emile('emile', {
-                duration: 1000,
-                color: '#ff0000',
-                after: f2
-              });
+        duration: 1000,
+        after: function () {
+          emile('emile', {
+            opacity: 1,
+            duration: 1000,
+            after: function () {
+              function f1() {
+                emile('emile', {
+                  duration: 1000,
+                  color: '#ff0000',
+                  after: f2
+                });
+              }
+
+              function f2() {
+                emile('emile', {
+                  duration: 1000,
+                  color: '#00ff00',
+                  after: f1
+                });
+              }
+              f1();
             }
-            function f2() {
-              emile('emile', {
-                duration: 1000,
-                color: '#00ff00',
-                after: f1
-              });
-            }
-            f1();
-          }
-        });
+          });
+        }
       });
     </script>
   </body>

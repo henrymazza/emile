@@ -53,11 +53,10 @@
 
       });
 
-      test('after callbacks', 6, function () {
+      test('after callbacks', 3, function () {
         var element = document.getElementById('test_after'),
-            after = false, optionsAfter = false;
+            optionsAfter = false;
 
-        ok(!after, 'no after');
         ok(!optionsAfter, 'no options after');
         emile(element, {
           left: '300px',
@@ -65,15 +64,10 @@
           after: function () {
             optionsAfter = true;
           }
-        },
-        function () {
-          after = true;
         });
-        ok(!after, 'still no after');
         ok(!optionsAfter, 'still no options after');
 
         setTimeout(function(){
-          ok(after, 'finally after');
           ok(optionsAfter, 'finally options after');
         }, 250);
 

@@ -152,7 +152,7 @@
         easing = opts.easing || 'ease-out';
     duration = duration + 'ms';
     opts.after && el.addEventListener(transitionEnd, function f() {
-      opts.after && opts.after(elm);
+      opts.after();
       el.removeEventListener(transitionEnd, f, true);
     }, true);
 
@@ -172,8 +172,26 @@
     }, 10);
   }
 
-  function emile(el, o, opts) {
+  function clone(o) {
+    var r = {};
+    for (var k in o) {
+      r[k] = o[k];
+      (k == 'after') && delete o[k];
+    }
+    return r;
+  }
+
+  function emile(el, o) {
     el = typeof el == 'string' ? document.getElementById(el) : el;
+    o = clone(o);
+    var opts = {
+      duration: o.duration,
+      easing: o.easing,
+      after: o.after
+    };
+    delete o.duration;
+    delete o.easing;
+    delete o.after;
     if (prefix && (typeof opts.easing !== 'function')) {
       return nativeAnim(el, o, opts);
     }
