@@ -11,6 +11,7 @@
     for (var i = 0, l = this.length; i < l; i++) {
       this[i].style.opacity = to ? 0 : 1;
       this[i].style.filter = 'alpha(opacity=' + (to ? 0 : 1 ) * 100 + ')';
+      this[i].style.display = '';
     }
     return this.animate({
       opacity: to,
