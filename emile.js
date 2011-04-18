@@ -7,6 +7,7 @@
     'borderRightColor borderRightWidth borderSpacing borderTopColor borderTopWidth bottom color fontSize '+
     'fontWeight height left letterSpacing lineHeight marginBottom marginLeft marginRight marginTop maxHeight '+
     'maxWidth minHeight minWidth opacity outlineColor outlineOffset outlineWidth paddingBottom paddingLeft '+
+    'backgroundPositionX backgroundPositionY ' + 
     'paddingRight paddingTop right textIndent top width wordSpacing zIndex').split(' ');
 
   function interpolate(source,target,pos){ return (source+(target-source)*pos).toFixed(3); }
