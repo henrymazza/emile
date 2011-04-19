@@ -9,8 +9,9 @@
   function fade(duration, callback, to) {
     var opts = getOptions(duration, callback);
     for (var i = 0, l = this.length; i < l; i++) {
-      this[i].style.opacity = to ? 0 : 1;
-      this[i].style.filter = 'alpha(opacity=' + (to ? 0 : 1 ) * 100 + ')';
+      this[i].currentStyle || (this[i].style.opacity = to ? 0 : 1);
+      this[i].currentStyle && (this[i].style.filter = 'alpha(opacity=' + (to ? 0 : 1 ) * 100 + ')');
+      this[i].currentStyle && !this[i].currentStyle.hasLayout && (this[i].style.zoom = 1);
       this[i].style.display = '';
     }
     return this.animate({
