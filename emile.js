@@ -5,15 +5,17 @@
 !function (context) {
   var parseEl = document.createElement('div'),
       prefixes = ["webkit", "Moz", "O"],
+      animations = [],
       j = 3,
       prefix,
       _prefix,
-      d = /\d+$/,
+      d = /^-?\d+(\.\d+)?$/,
       animationProperties = {},
       baseProps = 'backgroundColor borderBottomColor borderLeftColor ' +
         'borderRightColor borderTopColor color fontWeight lineHeight ' +
         'opacity outlineColor zIndex',
       pixelProps = 'top bottom left right ' +
+        'backgroundPositionX backgroundPositionY ' +
         'borderWidth borderBottomWidth borderLeftWidth borderRightWidth borderTopWidth ' +
         'borderSpacing borderRadius ' +
         'marginBottom marginLeft marginRight marginTop ' +
@@ -129,6 +131,7 @@
         comp = el.currentStyle ? el.currentStyle : getComputedStyle(el, null),
         current = {}, start = +new Date(), prop,
         dur = opts.duration || 200, finish = start + dur, interval,
+        a = {e: el, i: null, s: opts.slot},
         easing = opts.easing || function (pos) {
           return (-Math.cos(pos * Math.PI) / 2) + 0.5;
         };
@@ -138,25 +141,31 @@
     interval = setInterval(function () {
       var time = +new Date(), p, pos = time > finish ? 1 : (time - start) / dur;
       for (p in target) {
-        try{
+        try {
           el.style[p] = target[p].f(current[p].v, target[p].v, easing(pos)) + target[p].u;
-        }catch(e){};
+        } catch (e) {}
       }
       if (time > finish) {
         clearInterval(interval);
         opts.after && opts.after(el);
+        for (var j = animations.length; j--;) {
+          if (animations[j] === a){
+            delete animations.splice(j, 1);
+          }
+        }
       }
     }, 10);
+    a.i = interval;
+    animations.push(a);
   }
 
   function nativeAnim(el, o, opts) {
     var props = [],
-        styles = [],
         duration = opts.duration || 1000,
         easing = opts.easing || 'ease-out';
     duration = duration + 'ms';
     opts.after && el.addEventListener(transitionEnd, function f() {
-      opts.after();
+      opts.after(el);
       el.removeEventListener(transitionEnd, f, true);
     }, true);
 
@@ -191,12 +200,25 @@
     var opts = {
       duration: o.duration,
       easing: o.easing,
-      after: o.after
+      after: o.after,
+      slot: o.slot,
+      native: o.native
     };
     delete o.duration;
     delete o.easing;
     delete o.after;
-    if (prefix && (typeof opts.easing !== 'function')) {
+    delete o.slot;
+    delete o.native;
+
+    // stop ongoing animations happening at the same slot and element
+    for (var j = animations.length; opts.slot && j--;) {
+      var a = animations[j];
+      if (a.e == el && a.s == opts.slot) {
+        clearInterval(animations.splice(j, 1)[0].i);
+      }
+    }
+
+    if (prefix && (typeof opts.easing !== 'function') && opts.native !== false) {
       return nativeAnim(el, o, opts);
     }
     var serial = serialize(o, function (k, v) {
