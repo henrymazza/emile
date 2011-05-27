@@ -198,13 +198,11 @@
       easing: o.easing,
       after: o.after,
       slot: o.slot,
-      native: o.native
     };
     delete o.duration;
     delete o.easing;
     delete o.after;
     delete o.slot;
-    delete o.native;
 
     // stop ongoing animations happening at the same slot and element
     for (var j = animations.length; opts.slot && j--;) {
@@ -214,7 +212,7 @@
       }
     }
 
-    if (prefix && (typeof opts.easing !== 'function') && opts.native !== false) {
+    if (prefix && typeof opts.easing !== 'function') {
       return nativeAnim(el, o, opts);
     }
     var serial = serialize(o, function (k, v) {
